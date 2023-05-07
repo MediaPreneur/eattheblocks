@@ -11,6 +11,7 @@ the most mentioned ticker is heavily downvoted, but you can change that in upvot
 -------------------------------------------------------------------
 ****************************************************************************'''
 
+
 import praw
 from data import *
 import time
@@ -50,13 +51,13 @@ for sub in subs:
     hot_python = subreddit.hot()    # sorting posts by hot
     # Extracting comments, symbols from subreddit
     for submission in hot_python:
-        # checking: post upvote ratio # of upvotes, post flair, and author 
+        # checking: post upvote ratio # of upvotes, post flair, and author
         if submission.title.startswith(submission_name):   
-            submission.comment_sort = 'new'     
+            submission.comment_sort = 'new'
             comments = submission.comments
             titles.append(submission.title)
             posts += 1
-            submission.comments.replace_more(limit=limit)   
+            submission.comments.replace_more(limit=limit)
             for comment in comments:
                 #print(comment.body)
                 #print(comment.score)
@@ -64,38 +65,36 @@ for sub in subs:
                 try: auth = comment.author.name
                 except: pass
                 c_analyzed += 1
-                
+
                 # checking: comment upvotes and author
                 if comment.score > upvotes and auth not in ignoreAuthC:      
                     split = comment.body.split(" ")
                     for word in split:
-                        word = word.replace("$", "")        
+                        word = word.replace("$", "")
                         # upper = ticker, length of ticker <= 5, excluded words,                     
                         #print(word)
                         if word.isupper() and len(word) <= 5 and word not in blacklist and word in crypto:
                             #print('here')
-                            
+
                             # unique comments, try/except for key errors
                             if uniqueCmt and auth not in goodAuth:
                                 try: 
                                     if auth in cmt_auth[word]: break
                                 except: pass
-                                
+
                             # counting tickers
                             if word in tickers:
                                 tickers[word] += 1
                                 a_comments[word].append(comment.body)
                                 cmt_auth[word].append(auth)
-                                count += 1
-                            else:                               
+                            else:   
                                 tickers[word] = 1
                                 cmt_auth[word] = [auth]
                                 a_comments[word] = [comment.body]
-                                count += 1    
-
+                            count += 1
 # sorts the dictionary
 symbols = dict(sorted(tickers.items(), key=lambda item: item[1], reverse = True))
-top_picks = list(symbols.keys())[0:picks]
+top_picks = list(symbols.keys())[:picks]
 time = (time.time() - start_time)
 
 # print top picks
@@ -111,16 +110,16 @@ for i in top_picks:
     print(f"{i}: {symbols[i]}")
     times.append(symbols[i])
     top.append(f"{i}: {symbols[i]}")
-   
-    
+
+
 # Applying Sentiment Analysis
 scores, s = {}, {}
- 
+
 vader = SentimentIntensityAnalyzer()
 # adding custom words from data.py 
 vader.lexicon.update(new_words)
 
-picks_sentiment = list(symbols.keys())[0:picks_ayz]
+picks_sentiment = list(symbols.keys())[:picks_ayz]
 for symbol in picks_sentiment:
     stock_comments = a_comments[symbol]
     for cmnt in stock_comments:
@@ -134,7 +133,7 @@ for symbol in picks_sentiment:
                 scores[symbol][key] += score[key]
         else:
             scores[symbol] = score
-            
+
     # calculating avg.
     for key in score:
         scores[symbol][key] = scores[symbol][key] / symbols[symbol]
