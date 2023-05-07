@@ -1,4 +1,4 @@
-import urllib.request, json 
+import urllib.request, json
 from jinja2 import Environment, FileSystemLoader
 
 tickers = ''
@@ -8,7 +8,7 @@ for i in range(1, 11):
     with urllib.request.urlopen(endpoint) as url:
         data = json.loads(url.read().decode())
         for crypto in data:
-            tickers = tickers + "'" + crypto['symbol'].upper() + "'" + ','
+            tickers = f"{tickers}'" + crypto['symbol'].upper() + "'" + ','
 file_loader = FileSystemLoader('./')
 env = Environment(loader=file_loader)
 template = env.get_template('data.jinja2')

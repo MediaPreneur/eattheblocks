@@ -82,9 +82,20 @@ def main():
             '| {:.2%} | {:.2%} | {:.2%} | {:.2%} |'.format(*change)
 
     daily.reply(
-                '\n\n'.join((phrase, table, '*Guess I\'ll check the price tomorrow...*', ath_announce, '---',
-                            ''.join(' ^^'+w if w[0] != '*' else ' *'+'^^'+w[1:] for w in footer.split())))
-                )
+        '\n\n'.join(
+            (
+                phrase,
+                table,
+                '*Guess I\'ll check the price tomorrow...*',
+                ath_announce,
+                '---',
+                ''.join(
+                    f' ^^{w}' if w[0] != '*' else ' *' + '^^' + w[1:]
+                    for w in footer.split()
+                ),
+            )
+        )
+    )
 
     print('Wrote comment successfully.')
 
